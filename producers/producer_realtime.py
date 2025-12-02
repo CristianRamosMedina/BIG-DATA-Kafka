@@ -10,9 +10,9 @@ import random
 from kafka import KafkaProducer
 from datetime import datetime
 
-KAFKA_BROKER = 'localhost:9092'
+KAFKA_BROKERS = ['localhost:9092', 'localhost:9093', 'localhost:9094']
 TOPIC = 'weather-raw'
-INTERVALO = 10  # 10 segundos
+INTERVALO = 10  # s
 
 ZONAS_LIMA = {
     'Lima Centro': {'lat': -12.046, 'lon': -77.043},
@@ -37,7 +37,7 @@ def get_weather_data(zona, lat, lon):
         response.raise_for_status()
         data = response.json()
 
-        # Agregar variación realista (API actualiza cada 15 min, simulamos cambios)
+        # Variación realista (API actualiza cada 15 min, simulamos cambios)
         temp_base = data['current']['temperature_2m']
         hum_base = data['current']['relative_humidity_2m']
         wind_base = data['current']['wind_speed_10m']
@@ -65,10 +65,10 @@ def main():
     print("=" * 70)
     print("PRODUCER REAL-TIME - KAFKA CLIMA LIMA")
     print("=" * 70)
-    print(f"Conectando a Kafka: {KAFKA_BROKER}")
+    print(f"Conectando a Kafka Cluster: {', '.join(KAFKA_BROKERS)}")
 
     producer = KafkaProducer(
-        bootstrap_servers=[KAFKA_BROKER],
+        bootstrap_servers=KAFKA_BROKERS,
         value_serializer=lambda v: json.dumps(v).encode('utf-8'),
         key_serializer=lambda k: k.encode('utf-8') if k else None,
         acks='all'
