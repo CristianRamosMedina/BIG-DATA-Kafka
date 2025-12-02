@@ -7,10 +7,10 @@ import json
 from kafka import KafkaConsumer, KafkaProducer
 from datetime import datetime
 
-KAFKA_BROKER = 'localhost:9092'
+KAFKA_BROKERS = ['localhost:9092', 'localhost:9093', 'localhost:9094']
 TOPIC_INPUT = 'weather-raw'
 TOPIC_OUTPUT = 'weather-clean'
-GROUP_ID = 'cleaning-processor'
+GROUP_ID = 'cleaning-processor-current'
 
 def main():
     print("=" * 70)
@@ -19,15 +19,14 @@ def main():
 
     consumer = KafkaConsumer(
         TOPIC_INPUT,
-        bootstrap_servers=[KAFKA_BROKER],
+        bootstrap_servers=KAFKA_BROKERS,
         group_id=GROUP_ID,
         auto_offset_reset='latest',
-        value_deserializer=lambda m: json.loads(m.decode('utf-8')),
-        consumer_timeout_ms=30000  # Termina si no hay mensajes por 30s
+        value_deserializer=lambda m: json.loads(m.decode('utf-8'))
     )
 
     producer = KafkaProducer(
-        bootstrap_servers=[KAFKA_BROKER],
+        bootstrap_servers=KAFKA_BROKERS,
         value_serializer=lambda v: json.dumps(v).encode('utf-8'),
         key_serializer=lambda k: k.encode('utf-8') if k else None,
         acks='all'

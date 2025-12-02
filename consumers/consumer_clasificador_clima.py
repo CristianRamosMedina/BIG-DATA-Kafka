@@ -12,8 +12,8 @@ import json
 import os
 from kafka import KafkaConsumer
 from datetime import datetime
-
-KAFKA_BROKER = 'localhost:9092'
+ 
+KAFKA_BROKERS = ['localhost:9092', 'localhost:9093', 'localhost:9094']
 TOPIC = 'weather-clean'
 GROUP_ID = 'clasificador-clima'
 OUTPUT_DIR = '../data/predictions'
@@ -145,7 +145,7 @@ def main():
 
     consumer = KafkaConsumer(
         TOPIC,
-        bootstrap_servers=[KAFKA_BROKER],
+        bootstrap_servers=KAFKA_BROKERS,
         group_id=GROUP_ID,
         auto_offset_reset='latest',
         value_deserializer=lambda m: json.loads(m.decode('utf-8'))

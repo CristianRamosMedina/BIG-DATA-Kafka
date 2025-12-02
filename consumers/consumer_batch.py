@@ -8,11 +8,11 @@ import os
 from kafka import KafkaConsumer
 from datetime import datetime
 from collections import defaultdict
-
-KAFKA_BROKER = 'localhost:9092'
+ 
+KAFKA_BROKERS = ['localhost:9092', 'localhost:9093', 'localhost:9094']
 TOPIC = 'weather-clean'
-GROUP_ID = 'batch-processor'
-BATCH_SIZE = 72  # Mini-batch cada 2 minutos (12 ciclos × 6 zonas)
+GROUP_ID = 'batch-processor-current'
+BATCH_SIZE = 72  # Mini-batch 2 minutos (12 ciclos × 6 zonas)
 OUTPUT_DIR = '../data/batch'
 
 buffer = []
@@ -88,11 +88,10 @@ def main():
 
     consumer = KafkaConsumer(
         TOPIC,
-        bootstrap_servers=[KAFKA_BROKER],
+        bootstrap_servers=KAFKA_BROKERS,
         group_id=GROUP_ID,
         auto_offset_reset='earliest',
-        value_deserializer=lambda m: json.loads(m.decode('utf-8')),
-        consumer_timeout_ms=30000
+        value_deserializer=lambda m: json.loads(m.decode('utf-8'))
     )
 
     try:
